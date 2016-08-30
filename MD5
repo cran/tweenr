@@ -1,4 +1,4 @@
-f720fc77e39955b4ea980805a73f8db5 *DESCRIPTION
+ac4578266307667994d2faa3e951725a *DESCRIPTION
 da0003f1ded1bdebeb75ff44a92631c7 *NAMESPACE
 d5df0fa4a955c2d364128df0dbaa08f8 *R/RcppExports.R
 486391f2698e6910531213757334cbbf *R/aaa.R
@@ -10,11 +10,11 @@ ca187efc18d42f8e249c839b86cafb3f *R/tween_appear.R
 8d52dfe1ed328a6d1ed641283a83c24f *R/tween_constant.R
 095de063550a46119f1b91f4327c489c *R/tween_date.R
 a653474779c2bf91a6f7652d3f7613e3 *R/tween_datetime.R
-e94dae43676ffd31ee289045fe9c17a0 *R/tween_elements.R
+08b2443b23552ac121d85a73228e5ae5 *R/tween_elements.R
 cc785c626b69d612f112e32db2c0eb3e *R/tween_numeric.R
 b98c8993da23a6d685e2b4e4451743a4 *R/tween_states.R
 2b128f80793c1c141614357780cb5077 *R/tweenr_package.R
-cd3159bd331cad6dcd8b6267ef8332e9 *README.md
+e5b7e5d4531ad0fbe5aa901bc916218b *README.md
 dbab4368be0ca442e22050353e0abf3c *man/display_ease.Rd
 b68dabf50ec68e685d2814e34c4dedbe *man/tween.Rd
 a64a339a92c89d26e1dbb3fdadae950c *man/tween_appear.Rd
