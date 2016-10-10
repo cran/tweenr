@@ -1,8 +1,8 @@
 Package: tweenr
 Type: Package
 Title: Interpolate Data for Smooth Animations
-Version: 0.1.4
-Date: 2016-08-30
+Version: 0.1.5
+Date: 2016-10-09
 Authors@R: c(
     person('Thomas Lin', 'Pedersen', , 'thomasp85@gmail.com', c('aut', 'cre'))
     )
@@ -25,7 +25,7 @@ Collate: 'RcppExports.R' 'aaa.R' 'tween_numeric.R' 'display_ease.R'
         'tween_elements.R' 'tween_states.R' 'tweenr_package.R'
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2016-08-30 07:56:48 UTC; Thomas
+Packaged: 2016-10-10 07:50:08 UTC; tlp
 Author: Thomas Lin Pedersen [aut, cre]
 Repository: CRAN
-Date/Publication: 2016-08-30 13:10:04
+Date/Publication: 2016-10-10 11:41:11
