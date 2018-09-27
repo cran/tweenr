@@ -1,6 +1,3 @@
-#' @include tween_numeric.R
-NULL
-
 #' Display an easing function
 #'
 #' This simple helper lets you explore how the different easing functions govern
@@ -9,7 +6,7 @@ NULL
 #' @details
 #' How transitions proceed between states are defined by an easing function. The
 #' easing function converts the parameterized progression from one state to the
-#' next to a new number between 0 and 1. \code{linear} easing is equivalent to
+#' next to a new number between 0 and 1. `linear` easing is equivalent to
 #' an identity function that returns the input unchanged. In addition there are
 #' a range of additional easers available, each with three modifiers.
 #'
@@ -36,7 +33,7 @@ NULL
 #' }
 #'
 #' In addition to this function a good animated explanation can be found
-#' \href{http://easings.net}{here}.
+#' [here](http://easings.net).
 #'
 #' @param ease The name of the easing function to display (see details)
 #'
@@ -53,8 +50,8 @@ NULL
 #' @export
 #'
 display_ease <- function(ease) {
-    easepoints <- tween_numeric(c(0, 1), 100, ease)[[1]]
-    progress <- seq(0, 1, length.out = 100)
-    plot(progress, easepoints, type = 'l', main = ease, xlab = 'In',
-         ylab = 'Out', bty = 'n')
+  easepoints <- tween_numeric(c(0, 1), 100, ease)[[1]]
+  progress <- seq(0, 1, length.out = 100)
+  plot(progress, easepoints, type = 'l', main = ease, xlab = 'In',
+       ylab = 'Out', bty = 'n')
 }

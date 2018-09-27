@@ -2,7 +2,7 @@
 #'
 #' This function is intended for use when you have a data.frame of events at
 #' different time points. This could be the appearance of an observation for
-#' example. This function replicates your data \code{nframes} times and
+#' example. This function replicates your data `nframes` times and
 #' calculates the duration of each frame. At each frame each row is
 #' assigned an age based on the progression of frames and the entry point of in
 #' time for that row. A negative age means that the row has not appeared yet.
@@ -17,11 +17,11 @@
 #' will defaults to the range of the time column
 #'
 #' @param nframes The number of frames to create for the tween. If missing it
-#' will create a frame for each full unit in \code{timerange} (e.g.
-#' \code{timerange = c(1, 10)} will give \code{nframes = 10})
+#' will create a frame for each full unit in `timerange` (e.g.
+#' `timerange = c(1, 10)` will give `nframes = 10`)
 #'
-#' @return A data.frame as \code{data} but repeated \code{nframes} times and
-#' with the additional columns \code{.age} and \code{.frame}
+#' @return A data.frame as `data` but repeated `nframes` times and
+#' with the additional columns `.age` and `.frame`
 #'
 #' @family data.frame tween
 #'
@@ -37,21 +37,21 @@
 #' @export
 #'
 tween_appear <- function(data, time, timerange, nframes) {
-    if (missing(timerange) || is.null(timerange)) {
-        timerange <- range(data[[time]])
-    }
-    if (missing(nframes) || is.null(nframes)) {
-        nframes <- ceiling(diff(timerange) + 1)
-    }
-    framelength <- diff(timerange) / nframes
+  if (missing(timerange) || is.null(timerange)) {
+    timerange <- range(data[[time]])
+  }
+  if (missing(nframes) || is.null(nframes)) {
+    nframes <- ceiling(diff(timerange) + 1)
+  }
+  framelength <- diff(timerange) / nframes
 
-    tweendata <- lapply(seq_len(nframes) - 1, function(f) {
-        timepoint <- f * framelength
-        data$.age <- timepoint - data[[time]]
-        data$.frame <- f
-        data
-    })
-    tweendata <- do.call(rbind, tweendata)
-    attr(tweendata, 'framelength') <- framelength
-    tweendata
+  tweendata <- lapply(seq_len(nframes) - 1, function(f) {
+    timepoint <- f * framelength
+    data$.age <- timepoint - data[[time]]
+    data$.frame <- f
+    data
+  })
+  tweendata <- do.call(rbind, tweendata)
+  attr(tweendata, 'framelength') <- framelength
+  tweendata
 }
