@@ -1,4 +1,4 @@
-2a744a2fff25fbd5664c0b877d846f29 *DESCRIPTION
+6e6fd070981b4da1e4ff6d549960fd66 *DESCRIPTION
 928d886d4e8454f3db823a37d4de465f *LICENSE
 1ce9ebcadbe312056258a8f41326b685 *NAMESPACE
 313d3adca091ef0a5997a0bf74c05e61 *R/RcppExports.R
@@ -14,7 +14,7 @@ ac339e3835e902f17f662884605697e6 *R/tween_along.R
 2d43ff320e0f18cae6f4d62fce5d9c94 *R/tween_appear.R
 641fea63107e6850430abe0e1de68b73 *R/tween_at.R
 a0fb7bf5931f79cdc9b3fe258a1b7af5 *R/tween_colour.R
-64f8afe7635128bc3682a90b12a4ae95 *R/tween_components.R
+9721b0743f541b5c29e1e03e150fd861 *R/tween_components.R
 e2bf81312be495522d36feace8ca4291 *R/tween_constant.R
 81d553e0dabc78640045286414615d9c *R/tween_date.R
 c043ef5f53d196435d92b7502733ed98 *R/tween_datetime.R
