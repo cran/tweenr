@@ -40,7 +40,7 @@ validEase <- c(
 magrittr::`%>%`
 
 col_classes <- function(data) {
-  classes <- sapply(data, function(d) {
+  classes <- vapply(data, function(d) {
     if (is.numeric(d)) {
       'numeric'
     } else if (is.logical(d)) {
@@ -64,7 +64,7 @@ col_classes <- function(data) {
     } else {
       'constant'
     }
-  })
+  }, character(1))
   names(classes) <- names(data)
   classes[names(classes) == '.phase'] <- 'phase'
   classes
@@ -108,7 +108,7 @@ prepareTweenTranspose <- function(data, n, ease) {
     overhead <- n - sum(s)
     if (overhead) {
       s <- s + rep(floor(overhead / l), l)
-      addInd <- sample(length(s), overhead %% l)
+      addInd <- seq_len(n - sum(s))
       s[addInd] <- s[addInd] + 1
     }
     c(s, 1)
