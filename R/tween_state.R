@@ -4,7 +4,7 @@
 #' letting you gradually build up a scene by composing state changes one by one.
 #' This setup lets you take more control over each state change and allows you
 #' to work with datasets with uneven number of rows, flexibly specifying what
-#' should happen with entering and exiting data. `keep_state()` is a simpel
+#' should happen with entering and exiting data. `keep_state()` is a simple
 #' helper for letting you pause at a state. `open_state()` is a shortcut from
 #' tweening from an empty dataset with a given `enter()` function while
 #' `close_state()` is the same but will instead tween into an empty dataset with
@@ -73,6 +73,7 @@
 #' appear in the last frame of the tween. This is the default.
 #'
 #' @importFrom rlang enquo
+#' @importFrom vctrs vec_rbind vec_cbind
 #' @export
 #'
 #' @examples
@@ -114,6 +115,8 @@
 #'               exit = to_zero)
 #'
 tween_state <- function(.data, to, ease, nframes, id = NULL, enter = NULL, exit = NULL) {
+  .data[] <- lapply(.data, fix_old_mapped_discrete)
+  to[] <- lapply(to, fix_old_mapped_discrete)
   from <- .get_last_frame(.data)
   from$.phase <- rep('raw', length.out = nrow(from))
   to$.phase <- rep('raw', length.out = nrow(to))
@@ -158,7 +161,7 @@ tween_state <- function(.data, to, ease, nframes, id = NULL, enter = NULL, exit 
 
   tweendata <- lapply(seq_along(classes), function(i) {
     d <- list(full_set$from[[i]], full_set$to[[i]])
-    state <- simple_state(nframes, ease[i])
+    state <- simple_state(as.integer(nframes), ease[i])
     switch(
       classes[i],
       numeric = interpolate_numeric_state(d, state),
@@ -176,10 +179,10 @@ tween_state <- function(.data, to, ease, nframes, id = NULL, enter = NULL, exit 
   })
   tweendata <- structure(tweendata, names = names(full_set$from), row.names = seq_along(tweendata[[1]]), class = 'data.frame')
   tweendata$.frame <- rep(seq_len(nframes - 1), each = nrow(full_set$from))
-  tweendata <- rbind(
-    if (nframes > 1) cbind(from, .frame = rep(1, nrow(from))) else NULL,
+  tweendata <- vec_rbind(
+    if (nframes > 1) vec_cbind(from, .frame = rep(1, nrow(from))) else NULL,
     tweendata[tweendata$.frame != 1, , drop = FALSE],
-    cbind(to, .frame = rep(nframes, nrow(to)))
+    vec_cbind(to, .frame = rep(nframes, nrow(to)))
   )
   .with_prior_frames(.data, tweendata, nframes)
 }
@@ -262,7 +265,9 @@ close_state <- function(.data, ease, nframes, exit) {
   frames <- if (!is.null(nframes_before)) {
     prior <- prior[prior$.frame != nframes_before, , drop = FALSE]
     new_tween$.frame <- new_tween$.frame + nframes_before - 1
-    rbind(prior, new_tween)
+    if (is.character(prior$.id)) new_tween$.id <- as.character(new_tween$.id)
+    else if (is.character(new_tween$.id)) prior$.id <- as.character(prior$.id)
+    vec_rbind(prior, new_tween)
   } else {
     nframes_before <- 1
     new_tween
@@ -279,7 +284,9 @@ close_state <- function(.data, ease, nframes, exit) {
   frames <- if ('.frame' %in% names(later)) {
     later <- later[later$.frame != 1, , drop = FALSE]
     later$.frame <- later$.frame + max(new_tween$.frame)
-    rbind(new_tween, later)
+    if (is.character(later$.id)) new_tween$.id <- as.character(new_tween$.id)
+    else if (is.character(new_tween$.id)) later$.id <- as.character(later$.id)
+    vec_rbind(new_tween, later)
   } else {
     new_tween
   }
@@ -325,7 +332,7 @@ find_max_id <- function(data, new) {
 #' versions of `from` and `to`
 #'
 #' @keywords internal
-#' @importFrom rlang eval_tidy %||%
+#' @importFrom rlang eval_tidy %||% as_function
 #' @export
 .complete_states <- function(from, to, id, enter, exit, max_id) {
   from_id <- eval_tidy(id, from) %||% seq_len(nrow(from))
@@ -347,8 +354,7 @@ find_max_id <- function(data, new) {
       enters <- to[0, , drop = FALSE]
       enter_id <- to_id[0]
     } else {
-      stopifnot(is.function(enter))
-      enters <- enter(to[entering, , drop = FALSE])
+      enters <- as_function(enter)(to[entering, , drop = FALSE])
       enters$.phase <- 'enter'
       enter_id <- to_id[entering]
     }
@@ -358,14 +364,13 @@ find_max_id <- function(data, new) {
       exits <- from[0, , drop = FALSE]
       exit_id <- from_id[0]
     } else {
-      stopifnot(is.function(exit))
-      exits <- exit(from[exiting, , drop = FALSE])
+      exits <- as_function(exit)(from[exiting, , drop = FALSE])
       exits$.phase <- 'exit'
       exit_id <- from_id[exiting]
     }
-    from <- rbind(from, enters)
+    from <- vec_rbind(from, enters)
     from_id <- c(from_id, enter_id)
-    to <- rbind(to, exits)
+    to <- vec_rbind(to, exits)
     to_id <- c(to_id, exit_id)
   }
   from$.id[is.na(from$.id)] <- seq_len(sum(is.na(from$.id))) + max_id
@@ -381,10 +386,17 @@ find_max_id <- function(data, new) {
   !is.null(attr(data, 'nframes')) || !is.null(data$.frame)
 }
 simple_state <- function(n, ease) {
-  data.frame(state = c(0, 1), nframes = c(n - 1, 0), ease = c(ease, 'constant'), stringsAsFactors = FALSE)
+  data.frame(state = c(0L, 1L), nframes = c(n - 1L, 0L), ease = c(ease, 'constant'), stringsAsFactors = FALSE)
 }
 
 count_occourance <- function(x) {
   if (length(x) == 0) return(integer(0))
   unsplit(lapply(split(x, x), seq_along), x)
+}
+
+fix_old_mapped_discrete <- function(x) {
+  if (inherits(x, 'mapped_discrete') && storage.mode(x) == 'integer') {
+    storage.mode(x) <- 'double'
+  }
+  x
 }

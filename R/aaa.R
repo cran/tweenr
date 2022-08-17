@@ -39,35 +39,50 @@ validEase <- c(
 #' @export
 magrittr::`%>%`
 
+#' @rdname gen_internal
+#' @export
+#' @importFrom farver decode_colour
 col_classes <- function(data) {
-  classes <- vapply(data, function(d) {
-    if (is.numeric(d)) {
-      'numeric'
-    } else if (is.logical(d)) {
-      'logical'
-    } else if (is.factor(d)) {
-      'factor'
-    } else if (is.character(d)) {
-      colour <- try(suppressWarnings(col2rgb(d)), silent = TRUE)
-      if (all(is.na(d)) || inherits(colour, 'try-error') || anyNA(colour) || all(grepl('^(\\d|\\.)+$', d))) {
-        'character'
-      } else {
-        'colour'
-      }
-    } else if (inherits(d, 'Date')) {
-      'date'
-    } else if (inherits(d, 'POSIXt')) {
-      'datetime'
-    } else if (is.list(d)) {
-      if (all(vapply(d, is.numeric, logical(1)))) 'numlist'
-      else 'list'
-    } else {
-      'constant'
-    }
-  }, character(1))
+  classes <- vapply(data, vec_tween_class, character(1))
   names(classes) <- names(data)
   classes[names(classes) == '.phase'] <- 'phase'
   classes
+}
+
+#' Get the nominal class of a vector
+#'
+#' @param x a vector
+#'
+#' @export
+#' @keywords internal
+vec_tween_class <- function(x) {
+  UseMethod('vec_tween_class')
+}
+#' @export
+vec_tween_class.default <- function(x) 'constant'
+#' @export
+vec_tween_class.numeric <- function(x) 'numeric'
+#' @export
+vec_tween_class.logical <- function(x) 'logical'
+#' @export
+vec_tween_class.factor <- function(x) 'factor'
+#' @export
+vec_tween_class.character <- function(x) {
+  colour <- try(suppressWarnings(decode_colour(x)), silent = TRUE)
+  if (all(is.na(x)) || inherits(colour, 'try-error') || any(is.na(x) != is.na(colour[, 1])) || all(grepl('^(\\d|\\.)+$', x))) {
+    'character'
+  } else {
+    'colour'
+  }
+}
+#' @export
+vec_tween_class.Date <- function(x) 'date'
+#' @export
+vec_tween_class.POSIXt <- function(x) 'datetime'
+#' @export
+vec_tween_class.list <- function(x) {
+  if (all(vapply(x, is.numeric, logical(1)))) 'numlist'
+  else 'list'
 }
 
 prepareTween <- function(data, n, ease) {
@@ -83,8 +98,8 @@ prepareTween <- function(data, n, ease) {
   n <- c(rep(n, length.out = length(data) - 1) - 1, 1)
   ease <- c(rep(ease, length.out = length(data) - 1), 'constant')
   states <- data.frame(
-    state = seq_along(data) - 1,
-    nframes = n,
+    state = seq_along(data) - 1L,
+    nframes = as.integer(n),
     ease = ease,
     stringsAsFactors = FALSE
   )
@@ -120,8 +135,8 @@ prepareTweenTranspose <- function(data, n, ease) {
   ease <- unlist(lapply(easeSplit, append, values = 'constant'))
   data <- as.list(unlist(data))
   states <- data.frame(
-    state = seq_along(data) - 1,
-    nframes = n,
+    state = seq_along(data) - 1L,
+    nframes = as.integer(n),
     ease = ease,
     stringsAsFactors = FALSE
   )
@@ -129,4 +144,15 @@ prepareTweenTranspose <- function(data, n, ease) {
     data = data,
     states = states
   )
+}
+
+first <- function(x) x[[1]]
+`first<-` <- function(x, value) {
+  x[[1]] <- value
+  x
+}
+last <- function(x) x[[length(x)]]
+`last<-` <- function(x, value) {
+  x[[length(x)]] <- value
+  x
 }

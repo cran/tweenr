@@ -26,6 +26,8 @@
 #'
 #' @family data.frame tween
 #'
+#' @importFrom vctrs vec_cbind
+#'
 #' @examples
 #' data1 <- data.frame(
 #'   x = 1:20,
@@ -74,18 +76,18 @@ tween_states <- function(data, tweenlength, statelength, ease, nframes) {
     state = NA_integer_,
     stringsAsFactors = FALSE
   )
-  states$state <- rep(seq_len(nstates) - 1, each = 2, length.out = nrow(states))
+  states$state <- rep(seq_len(nstates) - 1L, each = 2, length.out = nrow(states))
   states$ease <- lapply(c(rep(list('constant'), nstates), ease)[statesOrder], function(e) {
     structure(rep(e, length.out = length(origNames)), names = origNames)
   })
   fullLength <- sum(states$length)
   framelength <- fullLength/nframes
-  states$nframes <- round(states$length / framelength)
+  states$nframes <- as.integer(round(states$length / framelength))
   nframes <- sum(states$nframes)
   framelength <- fullLength/nframes
   data <- Reduce(function(l, r) {
     extraCols <- !names(l[[length(l)]]) %in% names(r);
-    append(l, list(cbind(r, l[[length(l)]][, extraCols])))
+    append(l, list(vec_cbind(r, l[[length(l)]][, extraCols])))
   }, data[-1], data[1])
   colClasses <- col_classes(data[[1]])
   tweendata <- lapply(names(data[[1]]),  function(name) {
