@@ -1,7 +1,7 @@
-72cfcb89cdf7acc783dd16ad73abf529 *DESCRIPTION
+789c2eeb64197d1d48879ee67dc5ad8e *DESCRIPTION
 928d886d4e8454f3db823a37d4de465f *LICENSE
 571e6a775e95e68ad2d2a9e5ca91af78 *NAMESPACE
-32e7e38f571f66485bd668f710f96cd7 *NEWS.md
+9366f6d66342240e75bcfe63941acb5c *NEWS.md
 aa3700bd529296bd7f880898ebf31fcb *R/aaa.R
 a93f9ddd26b6dcebbe939e5d383bc8d0 *R/cpp11.R
 032419b5cfcaa8dd4107e3e7c3cf2bec *R/display_ease.R
@@ -31,7 +31,7 @@ c043ef5f53d196435d92b7502733ed98 *R/tween_datetime.R
 3fc00521e8bf1076ed4dec2dd637b90f *R/tween_events.R
 8d2d40175112d9250bbf643846105c5f *R/tween_fill.R
 3fbebb9b93bfc70f98c8d4da699a7517 *R/tween_numeric.R
-fe85349f048e61751acfb5bf2c7e6248 *R/tween_state.R
+a0c7c4a3094eadf3dd2eb1e556aa9823 *R/tween_state.R
 7a48e1410bb61e800d0962dc5ae1a958 *R/tween_states.R
 13b07fd6cd55f184f53414e5a8a06ca8 *R/tweenr_package.R
 dce8272174233e0d904fd6626a494bcc *README.md

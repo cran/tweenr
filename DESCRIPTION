@@ -1,7 +1,7 @@
 Package: tweenr
 Type: Package
 Title: Interpolate Data for Smooth Animations
-Version: 2.0.1
+Version: 2.0.2
 Authors@R: 
     c(person(given = "Thomas Lin",
              family = "Pedersen",
@@ -25,8 +25,8 @@ RoxygenNote: 7.2.1
 Suggests: testthat, covr
 SystemRequirements: C++11
 NeedsCompilation: yes
-Packaged: 2022-08-22 07:04:07 UTC; thomas
+Packaged: 2022-09-06 07:43:28 UTC; thomas
 Author: Thomas Lin Pedersen [aut, cre]
     (<https://orcid.org/0000-0002-5147-4711>)
 Repository: CRAN
-Date/Publication: 2022-08-22 09:00:02 UTC
+Date/Publication: 2022-09-06 08:00:02 UTC
