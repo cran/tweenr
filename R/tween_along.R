@@ -67,9 +67,13 @@ tween_along <- function(.data, ease, nframes, along, id = NULL, range = NULL, hi
   })
   tweenInfo <- tweendata[[1]][, c('group', 'frame')]
   tweendata <- lapply(tweendata, `[[`, i = 'data')
-  tweendata <- structure(tweendata, names = names(.data), row.names = seq_along(tweendata[[1]]), class = 'data.frame')
+  tweendata <- structure(tweendata, names = names(.data), row.names = .set_row_names(length(tweendata[[1]])), class = 'data.frame')
   tweendata$.frame <- tweenInfo$frame
   tweendata$.id <- tweenInfo$group
+  tweendata$.time <- unsplit(
+    lapply(split(tweendata$.time, tweendata$.frame), function(x) rlang::rep_along(x, max(x))),
+    tweendata$.frame
+  )
   attr(tweendata, 'framelength') <- framelength
   tweendata[order(tweendata$.frame, tweendata$.id), , drop = FALSE]
 }

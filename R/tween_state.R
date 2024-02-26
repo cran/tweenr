@@ -159,28 +159,36 @@ tween_state <- function(.data, to, ease, nframes, id = NULL, enter = NULL, exit 
     }
   }
   full_set <- .complete_states(from, to, id, enter, exit, .max_id(.data))
+
   to$.id <- full_set$orig_to
 
-  tweendata <- lapply(seq_along(classes), function(i) {
-    d <- list(full_set$from[[i]], full_set$to[[i]])
-    state <- simple_state(as.integer(nframes), ease[i])
-    switch(
-      classes[i],
-      numeric = interpolate_numeric_state(d, state),
-      logical = interpolate_logical_state(d, state),
-      factor = interpolate_factor_state(d, state),
-      character = interpolate_character_state(d, state),
-      colour = interpolate_colour_state(d, state),
-      date = interpolate_date_state(d, state),
-      datetime = interpolate_datetime_state(d, state),
-      constant = interpolate_constant_state(d, state),
-      numlist = interpolate_numlist_state(d, state),
-      list = interpolate_list_state(d, state),
-      phase = get_phase_state(d, state)
-    )
-  })
-  tweendata <- structure(tweendata, names = names(full_set$from), row.names = seq_along(tweendata[[1]]), class = 'data.frame')
-  tweendata$.frame <- rep(seq_len(nframes - 1), each = nrow(full_set$from))
+  if (nrow(full_set$from) != 0) {
+    tweendata <- lapply(seq_along(classes), function(i) {
+      d <- list(full_set$from[[i]], full_set$to[[i]])
+      state <- simple_state(as.integer(nframes), ease[i])
+      switch(
+        classes[i],
+        numeric = interpolate_numeric_state(d, state),
+        logical = interpolate_logical_state(d, state),
+        factor = interpolate_factor_state(d, state),
+        character = interpolate_character_state(d, state),
+        colour = interpolate_colour_state(d, state),
+        date = interpolate_date_state(d, state),
+        datetime = interpolate_datetime_state(d, state),
+        constant = interpolate_constant_state(d, state),
+        numlist = interpolate_numlist_state(d, state),
+        list = interpolate_list_state(d, state),
+        phase = get_phase_state(d, state)
+      )
+    })
+    tweendata <- structure(tweendata, names = names(full_set$from), row.names = .set_row_names(length(tweendata[[1]])), class = 'data.frame')
+    tweendata$.frame <- rep(seq_len(nframes - 1), each = nrow(full_set$from))
+  } else {
+    tweendata <- full_set$from
+    tweendata$.frame <- integer(0)
+  }
+  from[classes == "constant"] <- lapply(from[classes == "constant"], as.character)
+  to[classes == "constant"] <- lapply(to[classes == "constant"], as.character)
   tweendata <- vec_rbind(
     if (nframes > 1) vec_cbind(from, .frame = rep(1, nrow(from))) else NULL,
     tweendata[tweendata$.frame != 1, , drop = FALSE],
@@ -369,9 +377,15 @@ find_max_id <- function(data, new) {
       exits$.phase <- 'exit'
       exit_id <- from_id[exiting]
     }
-    from <- vec_rbind(from, enters)
+    from <- vec_rbind(
+      safe_df(from),
+      safe_df(enters)
+    )
     from_id <- c(from_id, enter_id)
-    to <- vec_rbind(to, exits)
+    to <- vec_rbind(
+      safe_df(to),
+      safe_df(exits)
+    )
     to_id <- c(to_id, exit_id)
   }
   from$.id[is.na(from$.id)] <- seq_len(sum(is.na(from$.id))) + max_id
@@ -399,5 +413,11 @@ fix_old_mapped_discrete <- function(x) {
   if (inherits(x, 'mapped_discrete') && storage.mode(x) == 'integer') {
     storage.mode(x) <- 'double'
   }
+  x
+}
+
+safe_df <- function(x) {
+  if (nrow(x) > 0) return(x)
+  x[] <- lapply(x, function(col) if (is.logical(col)) vctrs::unspecified() else col)
   x
 }
